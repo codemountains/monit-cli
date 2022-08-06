@@ -1,0 +1,18 @@
+[package]
+name = "monit-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Monitor web site response time."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "monit"
+path = "src/main.rs"
+
+[dependencies]
+ansi_term = "0.12.1"
+clap = { version = "3.2.16", features = ["derive"] }
+chrono = "0.4.20"
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
