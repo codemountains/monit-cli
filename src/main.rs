@@ -1,10 +1,10 @@
-use std::process;
 use ansi_term::Colour;
 use chrono::{DateTime, Local};
 use clap::{ArgEnum, Parser};
+use reqwest::StatusCode;
+use std::process;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
-use reqwest::StatusCode;
 
 #[derive(Parser, Debug)]
 #[clap(name = "monit", version, about, long_about = None, arg_required_else_help = true)]
@@ -24,8 +24,14 @@ struct Args {
     interval: u64,
 
     /// Output type
-    #[clap(short, long, arg_enum, value_name = "OUTPUT TYPE", default_value = "text")]
-    output: Output
+    #[clap(
+        short,
+        long,
+        arg_enum,
+        value_name = "OUTPUT TYPE",
+        default_value = "text"
+    )]
+    output: Output,
 }
 
 #[derive(Debug, Clone, ArgEnum, Copy)]
@@ -48,7 +54,7 @@ impl OutputMessage {
             datetime,
             url,
             status,
-            elapsed
+            elapsed,
         }
     }
 
@@ -56,15 +62,22 @@ impl OutputMessage {
         let dt = self.datetime.format("%Y-%m-%d %H:%M:%S").to_string();
         let url = self.url.as_str().to_string();
         let st = self.status.to_string();
-        let response_time = format!("{}.{:03}", self.elapsed.as_secs(), self.elapsed.subsec_nanos() / 1_000_000);
+        let response_time = format!(
+            "{}.{:03}",
+            self.elapsed.as_secs(),
+            self.elapsed.subsec_nanos() / 1_000_000
+        );
 
         match output {
             Output::Csv => {
                 format!(r#""{}","{}","{}","{}""#, dt, url, st, response_time)
-            },
+            }
             Output::Json => {
-                format!(r#"{{"datetime": "{}","url: "{}", "status": "{}","responseTime": "{}"}}"#, dt, url, st, response_time)
-            },
+                format!(
+                    r#"{{"datetime": "{}","url: "{}", "status": "{}","responseTime": "{}"}}"#,
+                    dt, url, st, response_time
+                )
+            }
             Output::Text => {
                 format!("{} {} {} {}", dt, url, st, response_time)
             }
