@@ -10,14 +10,12 @@ use std::time::{Duration, Instant};
 #[clap(name = "monit", version, about, long_about = None, arg_required_else_help = true)]
 struct Args {
     /// URL to be monitored for response time
-    #[clap(value_parser)]
     url: String,
 
     /// Interval seconds
     #[clap(
         short,
         long,
-        value_parser,
         value_name = "INTERVAL SECONDS",
         default_value_t = 30
     )]
