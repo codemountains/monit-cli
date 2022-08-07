@@ -37,16 +37,21 @@ enum Output {
 struct OutputMessage {
     datetime: DateTime<Local>,
     url: String,
-    status: StatusCode,
+    status_code: StatusCode,
     elapsed: Duration,
 }
 
 impl OutputMessage {
-    fn new(datetime: DateTime<Local>, url: String, status: StatusCode, elapsed: Duration) -> Self {
+    fn new(
+        datetime: DateTime<Local>,
+        url: String,
+        status_code: StatusCode,
+        elapsed: Duration,
+    ) -> Self {
         Self {
             datetime,
             url,
-            status,
+            status_code,
             elapsed,
         }
     }
@@ -54,7 +59,7 @@ impl OutputMessage {
     fn to_formatted(&self, output: Output) -> String {
         let dt = self.datetime.format("%Y-%m-%d %H:%M:%S").to_string();
         let url = self.url.as_str().to_string();
-        let st = self.status.to_string();
+        let st = self.status_code.to_string();
         let response_time = format!(
             "{}.{:03}",
             self.elapsed.as_secs(),
@@ -67,7 +72,7 @@ impl OutputMessage {
             }
             Output::Json => {
                 format!(
-                    r#"{{"datetime": "{}","url: "{}", "status": "{}","responseTime": "{}"}}"#,
+                    r#"{{"datetime": "{}","url: "{}", "statusCode": "{}","responseTime": "{}"}}"#,
                     dt, url, st, response_time
                 )
             }
@@ -97,12 +102,12 @@ async fn main() {
 
         match resp {
             Ok(resp) => {
-                let status = resp.status();
+                let status_code = resp.status();
 
-                let output_msg = OutputMessage::new(dt_now, url.to_string(), status, end);
+                let output_msg = OutputMessage::new(dt_now, url.to_string(), status_code, end);
                 let msg = output_msg.to_formatted(output);
 
-                let color_msg = if status.is_success() {
+                let color_msg = if status_code.is_success() {
                     Colour::Green.paint(&msg)
                 } else {
                     Colour::Red.paint(&msg)
