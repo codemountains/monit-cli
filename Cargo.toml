@@ -2,7 +2,7 @@
 name = "monit-cli"
 version = "0.1.0"
 edition = "2021"
-description = "Monitor web site response time."
+description = "Monitor website response time."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
