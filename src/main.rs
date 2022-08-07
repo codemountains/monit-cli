@@ -13,12 +13,7 @@ struct Args {
     url: String,
 
     /// Interval seconds
-    #[clap(
-        short,
-        long,
-        value_name = "INTERVAL SECONDS",
-        default_value_t = 30
-    )]
+    #[clap(short, long, value_name = "INTERVAL SECONDS", default_value_t = 30)]
     interval: u64,
 
     /// Output type
