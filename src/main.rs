@@ -2,9 +2,12 @@ use ansi_term::Colour;
 use chrono::{DateTime, Local};
 use clap::{ArgEnum, Parser};
 use reqwest::StatusCode;
-use std::process;
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::path::PathBuf;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
+use std::{fs, process};
 
 #[derive(Parser, Debug)]
 #[clap(name = "monit", version, about, long_about = None, arg_required_else_help = true)]
@@ -25,6 +28,10 @@ struct Args {
         default_value = "text"
     )]
     output: Output,
+
+    /// File path for output
+    #[clap(short, long, value_name = "FILE PATH")]
+    file: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, ArgEnum, Copy)]
@@ -92,6 +99,16 @@ async fn main() {
     let url: &str = &args.url;
     let interval: u64 = args.interval;
     let output: Output = args.output;
+    let file: Option<PathBuf> = args.file;
+
+    if let Some(file_path) = &file {
+        if let Some(parent_path) = file_path.parent() {
+            fs::create_dir_all(parent_path).unwrap_or_else(|err| {
+                eprintln!("{}", err);
+                process::exit(1);
+            });
+        }
+    }
 
     loop {
         let dt_now = Local::now();
@@ -106,6 +123,13 @@ async fn main() {
 
                 let output_msg = OutputMessage::new(dt_now, url.to_string(), status_code, end);
                 let msg = output_msg.to_formatted(output);
+
+                if let Some(file_path) = &file {
+                    if let Err(err) = write_file(file_path, &msg) {
+                        eprintln!("{}", err);
+                        process::exit(1);
+                    }
+                }
 
                 let color_msg = if status_code.is_success() {
                     Colour::Green.paint(&msg)
@@ -122,5 +146,24 @@ async fn main() {
         }
 
         sleep(Duration::from_secs(interval));
+    }
+}
+
+fn write_file(file_path: &PathBuf, msg: &str) -> Result<(), std::io::Error> {
+    let output_msg = msg.to_string() + "\n";
+
+    let output_file = OpenOptions::new()
+        .create(true)
+        .read(true)
+        .write(true)
+        .append(true)
+        .open(file_path);
+
+    match output_file {
+        Ok(mut file) => {
+            file.write_all(output_msg.as_bytes())?;
+            Ok(())
+        }
+        Err(err) => Err(err),
     }
 }
