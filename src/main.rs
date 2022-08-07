@@ -79,7 +79,7 @@ impl OutputMessage {
             }
             Output::Json => {
                 format!(
-                    r#"{{"datetime": "{}","url: "{}", "statusCode": "{}","responseTime": "{}"}}"#,
+                    r#"{{"datetime": "{}","url: "{}","statusCode": "{}","responseTime": "{}"}}"#,
                     dt, url, st, response_time
                 )
             }
