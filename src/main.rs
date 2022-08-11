@@ -19,6 +19,10 @@ struct Args {
     #[clap(short, long, value_name = "INTERVAL SECONDS", default_value_t = 30)]
     interval: u64,
 
+    /// Bolder seconds for alert
+    #[clap(short, long, value_name = "BOLDER SECONDS", default_value_t = 3)]
+    bolder: u64,
+
     /// Output type
     #[clap(
         short,
@@ -98,6 +102,7 @@ async fn main() {
     let args = Args::parse();
     let url: &str = &args.url;
     let interval: u64 = args.interval;
+    let border: u64 = args.bolder;
     let output: Output = args.output;
     let file: Option<PathBuf> = args.file;
 
@@ -131,10 +136,10 @@ async fn main() {
                     }
                 }
 
-                let color_msg = if status_code.is_success() {
-                    Colour::Green.paint(&msg)
-                } else {
+                let color_msg = if !status_code.is_success() || end.as_secs() >= border {
                     Colour::Red.paint(&msg)
+                } else {
+                    Colour::Green.paint(&msg)
                 };
 
                 println!("{}", color_msg);
