@@ -36,6 +36,10 @@ struct Args {
     /// File path for output
     #[clap(short, long, value_name = "FILE PATH")]
     file: Option<PathBuf>,
+
+    /// Send request only once
+    #[clap(short = 'O', long)]
+    one_time: bool,
 }
 
 #[derive(Debug, Clone, ArgEnum, Copy)]
@@ -105,6 +109,7 @@ async fn main() {
     let border: u64 = args.bolder;
     let output: Output = args.output;
     let file: Option<PathBuf> = args.file;
+    let is_one_time: bool = args.one_time;
 
     if let Some(file_path) = &file {
         if let Some(parent_path) = file_path.parent() {
@@ -148,6 +153,10 @@ async fn main() {
                 eprintln!("{}", err);
                 process::exit(1);
             }
+        }
+
+        if is_one_time {
+            process::exit(0);
         }
 
         sleep(Duration::from_secs(interval));

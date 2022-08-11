@@ -20,22 +20,25 @@ monit [OPTIONS] <URL>
 
 ```
 -b, --bolder <BOLDER SECONDS>
-            Bolder seconds for alert [default: 3]
+        Bolder seconds for alert [default: 3]
 
-    -f, --file <FILE PATH>
-            File path for output
+-f, --file <FILE PATH>
+        File path for output
 
-    -h, --help
-            Print help information
+-h, --help
+        Print help information
 
-    -i, --interval <INTERVAL SECONDS>
-            Interval seconds [default: 30]
+-i, --interval <INTERVAL SECONDS>
+        Interval seconds [default: 30]
 
-    -o, --output <OUTPUT TYPE>
-            Output type [default: text] [possible values: csv, json, text]
+-o, --output <OUTPUT TYPE>
+        Output type [default: text] [possible values: csv, json, text]
 
-    -V, --version
-            Print version information
+-O, --one-time
+        Send request only once
+
+-V, --version
+        Print version information
 ```
 
 ### Examples
